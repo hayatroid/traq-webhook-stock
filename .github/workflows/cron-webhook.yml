@@ -1,7 +1,7 @@
 name: Cron Webhook
 on:
   schedule:
-    - cron: '0 0 * * 1-5'
+    - cron: '0 23 * * 1-5'
     - cron: '0 6 * * 1-5'
 
 jobs:
