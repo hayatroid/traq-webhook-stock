@@ -3,7 +3,10 @@ from datetime import datetime, timedelta, timezone
 import os
 import requests
 
-data = []
+message = """為替と株の値動きです
+|指数名|現在値|前日比|
+|-|-|-|
+"""
 
 codes = ["0000", "0010"]
 for code in codes:
@@ -20,16 +23,8 @@ for code in codes:
         up_or_down = "up"
     else:
         up_or_down = "down"
-    data.append(f"{name} : {price} ( !!:arrow_heading_{up_or_down}:!! {ratio[1:]}% )")
-
-am_or_pm = ""
-JST = timezone(timedelta(hours=+9), "JST")
-if datetime.now(JST).hour < 12:
-    am_or_pm = "おはよう！"
-else:
-    am_or_pm = "おつかれ！"
+    message += f"|{name}|{price}|{ratio[1:]}% :arrow_heading_{up_or_down}:|\n"
 
 webhook_id = os.environ.get("WEBHOOK_ID")
 headers = {"Content-Type": "text/plain; charset=utf-8"}
-message = f"{am_or_pm}現在の株の値動きだよ！\n" + "　".join(data)
 response = requests.post(f"https://q.trap.jp/api/v3/webhooks/{webhook_id}", headers=headers, data=message.encode("utf-8"))
