@@ -1,5 +1,4 @@
 from bs4 import BeautifulSoup
-from datetime import datetime, timedelta, timezone
 import os
 import requests
 
@@ -17,14 +16,22 @@ for code in codes:
     name = name.replace("日経平均", ":nikkei_heikin:")
     name = name.replace("ＴＯＰＩＸ", ":topix:")
     price = soup.select("span.kabuka")[0].contents[0].text
-    ratio = soup.select(".si_i1_dl1 dd span")[1].contents[0].text
+    ratio = ""
     up_or_down = ""
-    if ratio[0] == "+":
-        up_or_down = "up"
-    else:
-        up_or_down = "down"
-    message += f"|{name}|{price}|{ratio[1:]}% :arrow_heading_{up_or_down}:|\n"
+    try:
+        ratio = soup.select(".si_i1_dl1 dd span")[1].contents[0].text
+        if ratio[0] == "+":
+            up_or_down = "heading_up"
+        else:
+            up_or_down = "heading_down"
+        ratio = ratio[1:]
+    except IndexError:
+        ratio = soup.select(".si_i1_dl1 dd")[1].contents[0].text
+        up_or_down = "right"
+        ratio = ratio[:-1]
+    message += f"|{name}|{price}|{ratio}% :arrow_{up_or_down}:|\n"
 
 webhook_id = os.environ.get("WEBHOOK_ID")
 headers = {"Content-Type": "text/plain; charset=utf-8"}
 response = requests.post(f"https://q.trap.jp/api/v3/webhooks/{webhook_id}", headers=headers, data=message.encode("utf-8"))
+print(message)
