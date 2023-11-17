@@ -17,19 +17,19 @@ for code in codes:
     name = name.replace("ＴＯＰＩＸ", ":topix:")
     price = soup.select("span.kabuka")[0].contents[0].text
     ratio = ""
-    up_or_down = ""
+    stamp = ""
     try:
         ratio = soup.select(".si_i1_dl1 dd span")[1].contents[0].text
         if ratio[0] == "+":
-            up_or_down = "up"
+            stamp = ":chart_with_upwards_trend:"
         else:
-            up_or_down = "down"
+            stamp = ":chart_with_downwards_trend:"
         ratio = ratio[1:]
     except IndexError:
         ratio = soup.select(".si_i1_dl1 dd")[1].contents[0].text
-        up_or_down = "right"
+        stamp = ":arrow_right:"
         ratio = ratio[:-1]
-    message += f"|{name}|{price}|{ratio}% :chart_with_{up_or_down}wards_trend:|\n"
+    message += f"|{name}|{price}|{ratio}% {stamp}|\n"
 
 webhook_id = os.environ.get("WEBHOOK_ID")
 headers = {"Content-Type": "text/plain; charset=utf-8"}
