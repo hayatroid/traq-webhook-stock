@@ -21,15 +21,15 @@ for code in codes:
     try:
         ratio = soup.select(".si_i1_dl1 dd span")[1].contents[0].text
         if ratio[0] == "+":
-            up_or_down = "heading_up"
+            up_or_down = "up"
         else:
-            up_or_down = "heading_down"
+            up_or_down = "down"
         ratio = ratio[1:]
     except IndexError:
         ratio = soup.select(".si_i1_dl1 dd")[1].contents[0].text
         up_or_down = "right"
         ratio = ratio[:-1]
-    message += f"|{name}|{price}|{ratio}% :arrow_{up_or_down}:|\n"
+    message += f"|{name}|{price}|{ratio}% :chart_with_{up_or_down}wards_trend:|\n"
 
 webhook_id = os.environ.get("WEBHOOK_ID")
 headers = {"Content-Type": "text/plain; charset=utf-8"}
