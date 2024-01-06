@@ -1,7 +1,5 @@
 name: Cron Webhook
 on:
-  push:
-    branches: [ feat/new_indices ]
   schedule:
     - cron: '0 0 * * 1-5'
     - cron: '0 6 * * 1-5'
