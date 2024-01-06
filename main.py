@@ -3,8 +3,9 @@ from datetime import datetime
 import os
 from playwright.sync_api import sync_playwright
 import requests
+from zoneinfo import ZoneInfo
 
-message = f"""為替と株の値動きです ({datetime.now().strftime("%m/%d %H:%M")})
+message = f"""為替と株の値動きです ({datetime.now(ZoneInfo("Asia/Tokyo")).strftime("%m/%d %H:%M")})
 |指数名|現在値|前日比|
 |-|-|-|
 """
