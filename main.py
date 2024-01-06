@@ -1,37 +1,40 @@
 from bs4 import BeautifulSoup
+from datetime import datetime
 import os
+from playwright.sync_api import sync_playwright
 import requests
 
-message = """為替と株の値動きです
+message = f"""為替と株の値動きです ({datetime.now().strftime("%m/%d %H:%M")})
 |指数名|現在値|前日比|
 |-|-|-|
 """
 
-codes = ["0000", "0010"]
+html = ""
+with sync_playwright() as playwright:
+    browser = playwright.chromium.launch()
+    context = browser.new_context()
+    page = context.new_page()
+    page.goto("https://sekai-kabuka.com/")
+    html = page.content()
+
+soup = BeautifulSoup(html, "html.parser")
+codes = ["NN0", "NN2", "NN4", "NN9", "NN14", "NN15"]
 for code in codes:
-    url = f"https://kabutan.jp/stock/chart?code={code}"
-    res = requests.get(url)
-    soup = BeautifulSoup(res.text, "html.parser")
-    name = soup.select(".si_i1_1 h2")[0].contents[1].text
-    name = name.replace("日経平均", ":nikkei_heikin:")
-    name = name.replace("ＴＯＰＩＸ", ":topix:")
-    price = soup.select("span.kabuka")[0].contents[0].text
-    ratio = ""
+    name = soup.select(f"#{code} .ttN")[0].contents[0].text.strip()
+    price = soup.select(f"#{code} .怩侖鍠爲發隲蛞筵l穡倥")[0].contents[0].text
+    ratio = soup.select(f"#{code} .亠搨ｰ臻l佩韆淅嚏l仄淪ｪN")[0].contents[0].text
+    if code in ["NN14", "NN15"]:
+        price, ratio = ratio, price
     stamp = ""
-    try:
-        ratio = soup.select(".si_i1_dl1 dd span")[1].contents[0].text
-        if ratio[0] == "+":
-            stamp = ":chart_with_upwards_trend:"
-        else:
-            stamp = ":chart_with_downwards_trend:"
-        ratio = ratio[1:]
-    except IndexError:
-        ratio = soup.select(".si_i1_dl1 dd")[1].contents[0].text
-        stamp = ":arrow_right:"
-        ratio = ratio[:-1]
-    message += f"|{name}|{price}|{ratio}% {stamp}|\n"
+    if ratio[0] == "+":
+        stamp = ":chart_with_upwards_trend:"
+    elif ratio[0] == "-":
+        stamp = ":chart_with_downwards_trend:"
+    else:
+        stamp = ":white_large_square:"
+    message += f"|{name}|{price}|{ratio} {stamp}|\n"
 
 webhook_id = os.environ.get("WEBHOOK_ID")
 headers = {"Content-Type": "text/plain; charset=utf-8"}
-response = requests.post(f"https://q.trap.jp/api/v3/webhooks/{webhook_id}", headers=headers, data=message.encode("utf-8"))
+# response = requests.post(f"https://q.trap.jp/api/v3/webhooks/{webhook_id}", headers=headers, data=message.encode("utf-8"))
 print(message)
