@@ -23,8 +23,8 @@ soup = BeautifulSoup(html, "html.parser")
 names = [":nikkei_heikin:", ":topix:", ":growth250:", ":sp500:", ":usd_jpy:", ":eur_jpy:"]
 codes = ["NN0", "NN2", "NN4", "NN9", "NN14", "NN15"]
 for name, code in zip(names, codes):
-    price = soup.select(f"#{code} .怩侖鍠爲發隲蛞筵l穡倥")[0].contents[0].text
-    ratio = soup.select(f"#{code} .亠搨ｰ臻l佩韆淅嚏l仄淪ｪN")[0].contents[0].text
+    price = soup.select(f"#{code} span")[0].contents[0].text
+    ratio = soup.select(f"#{code} span")[2].contents[0].text
     if code in ["NN14", "NN15"]:
         price, ratio = ratio, price
     stamp = ""
