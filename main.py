@@ -24,7 +24,7 @@ names = [":nikkei_heikin:", ":topix:", ":growth250:", ":sp500:", ":usd_jpy:", ":
 codes = ["NN0", "NN2", "NN4", "NN9", "NN14", "NN15"]
 for name, code in zip(names, codes):
     price = soup.select(f"#{code} span")[0].contents[0].text + soup.select(f"#{code} span")[0].contents[1].text
-    ratio = soup.select(f"#{code} span")[2].contents[0].text + soup.select(f"#{code} span")[2].contents[1].text
+    ratio = soup.select(f"#{code} span")[2].contents[0].text + soup.select(f"#{code} span")[2].contents[1].text + "%"
     if code in ["NN14", "NN15"]:
         price, ratio = ratio, price
     stamp = ""
